@@ -39,7 +39,7 @@ header p{
 
 .container{
   width:94%;
-  max-width:700px;
+  max-width:750px;
   margin:18px auto 40px;
 }
 
@@ -64,7 +64,8 @@ label{
 }
 
 input,
-textarea{
+textarea,
+select{
   width:100%;
   border:1px solid #d8e1dd;
   border-radius:12px;
@@ -76,7 +77,8 @@ textarea{
 }
 
 input:focus,
-textarea:focus{
+textarea:focus,
+select:focus{
   border-color:#087f5b;
 }
 
@@ -112,6 +114,11 @@ button{
   color:#a40000;
 }
 
+.warning{
+  background:#fff4d9;
+  color:#805600;
+}
+
 .stats{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -132,13 +139,7 @@ button{
 }
 
 .stat strong{
-  font-size:20px;
-}
-
-.empty{
-  text-align:center;
-  color:#7b8782;
-  padding:20px 5px;
+  font-size:19px;
 }
 
 .entry{
@@ -150,14 +151,15 @@ button{
 
 .entry-title{
   font-weight:bold;
-  font-size:17px;
+  font-size:18px;
+  margin-bottom:8px;
 }
 
 .entry-row{
   display:flex;
   justify-content:space-between;
   gap:10px;
-  padding:7px 0;
+  padding:8px 0;
   border-bottom:1px dashed #e3e9e6;
 }
 
@@ -168,6 +170,41 @@ button{
 .amount{
   color:#087f5b;
   font-weight:bold;
+}
+
+.remaining{
+  color:#07533e;
+  font-weight:bold;
+}
+
+.person{
+  background:#f7faf8;
+  border:1px solid #e0e9e5;
+  border-radius:14px;
+  padding:13px;
+  margin-top:10px;
+}
+
+.person-title{
+  font-weight:bold;
+  font-size:17px;
+  margin-bottom:8px;
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:8px;
+  background:#e8f5ef;
+  color:#087f5b;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.empty{
+  text-align:center;
+  color:#7b8782;
+  padding:20px 5px;
 }
 
 .note{
@@ -181,6 +218,32 @@ button{
   color:#a40000;
   margin-top:10px;
   padding:10px;
+}
+
+.small-btn{
+  padding:10px;
+  font-size:14px;
+}
+
+.total-box{
+  background:#073b32;
+  color:white;
+  border-radius:15px;
+  padding:15px;
+  margin-top:12px;
+  text-align:center;
+}
+
+.total-box strong{
+  display:block;
+  font-size:23px;
+  margin-top:5px;
+}
+
+.divider{
+  height:1px;
+  background:#e5ebe8;
+  margin:18px 0;
 }
 
 footer{
@@ -208,17 +271,17 @@ footer{
     <div class="stats">
 
       <div class="stat">
-        <small>إجمالي العهد</small>
+        <small>إجمالي العهد المستلمة</small>
         <strong id="totalReceived">0</strong>
       </div>
 
       <div class="stat">
-        <small>إجمالي المصروف</small>
-        <strong id="totalSpent">0</strong>
+        <small>إجمالي الموزع</small>
+        <strong id="totalDistributed">0</strong>
       </div>
 
       <div class="stat">
-        <small>الرصيد المتبقي</small>
+        <small>المتبقي لديّ</small>
         <strong id="totalRemaining">0</strong>
       </div>
 
@@ -237,6 +300,7 @@ footer{
     <h2>🏦 استلام عهدة جديدة</h2>
 
     <label>الجهة التي سلمت العهدة</label>
+
     <input
       id="source"
       type="text"
@@ -244,6 +308,7 @@ footer{
     >
 
     <label>المبلغ</label>
+
     <input
       id="amount"
       type="number"
@@ -252,12 +317,14 @@ footer{
     >
 
     <label>التاريخ</label>
+
     <input
       id="date"
       type="date"
     >
 
     <label>رقم المرجع</label>
+
     <input
       id="reference"
       type="text"
@@ -265,6 +332,7 @@ footer{
     >
 
     <label>ملاحظات</label>
+
     <textarea
       id="notes"
       placeholder="أي ملاحظات عن العهدة..."
@@ -287,6 +355,16 @@ footer{
   </div>
 
 
+  <!-- العهد الموزعة -->
+  <div class="card">
+
+    <h2>👥 العهد عند الأشخاص</h2>
+
+    <div id="personList"></div>
+
+  </div>
+
+
   <footer>
     عُهدتي — نظام شخصي لإدارة العهد والتصفية
   </footer>
@@ -296,17 +374,50 @@ footer{
 
 <script>
 
+/* =========================
+   البيانات
+========================= */
+
 let custodys = JSON.parse(
   localStorage.getItem("ahdati_custodys") || "[]"
 );
 
+let distributions = JSON.parse(
+  localStorage.getItem("ahdati_distributions") || "[]"
+);
 
-// تعيين تاريخ اليوم تلقائيًا
+
+/* =========================
+   التاريخ
+========================= */
+
 document.getElementById("date").value =
   new Date().toISOString().split("T")[0];
 
 
-// إضافة عهدة
+/* =========================
+   حفظ البيانات
+========================= */
+
+function saveData(){
+
+  localStorage.setItem(
+    "ahdati_custodys",
+    JSON.stringify(custodys)
+  );
+
+  localStorage.setItem(
+    "ahdati_distributions",
+    JSON.stringify(distributions)
+  );
+
+}
+
+
+/* =========================
+   إضافة عهدة
+========================= */
+
 function addCustody(){
 
   const source =
@@ -326,17 +437,25 @@ function addCustody(){
 
 
   if(!source){
+
     alert("اكتب الجهة التي سلمت العهدة");
+
     return;
   }
+
 
   if(!amount || amount <= 0){
+
     alert("اكتب مبلغًا صحيحًا");
+
     return;
   }
 
+
   if(!date){
+
     alert("اختر التاريخ");
+
     return;
   }
 
@@ -373,21 +492,14 @@ function addCustody(){
   render();
 
   alert("تم تسجيل العهدة بنجاح ✅");
-}
-
-
-// حفظ البيانات
-function saveData(){
-
-  localStorage.setItem(
-    "ahdati_custodys",
-    JSON.stringify(custodys)
-  );
 
 }
 
 
-// تنظيف النموذج
+/* =========================
+   تنظيف النموذج
+========================= */
+
 function clearForm(){
 
   document.getElementById("source").value = "";
@@ -404,7 +516,23 @@ function clearForm(){
 }
 
 
-// عرض العهد
+/* =========================
+   إجمالي الموزع لعهدة معينة
+========================= */
+
+function distributedForCustody(custodyId){
+
+  return distributions
+    .filter(x => x.custodyId === custodyId)
+    .reduce((sum,x) => sum + Number(x.amount || 0),0);
+
+}
+
+
+/* =========================
+   عرض العهد
+========================= */
+
 function render(){
 
   const list =
@@ -420,11 +548,20 @@ function render(){
 
     updateStats();
 
+    renderPersons();
+
     return;
   }
 
 
   custodys.forEach(item => {
+
+    const distributed =
+      distributedForCustody(item.id);
+
+    const remaining =
+      Number(item.amount) - distributed;
+
 
     const div =
       document.createElement("div");
@@ -435,41 +572,41 @@ function render(){
     div.innerHTML = `
 
       <div class="entry-title">
-        ${escapeHtml(item.source)}
+        🏦 ${escapeHtml(item.source)}
       </div>
 
       <div class="entry-row">
-        <span>المبلغ</span>
+        <span>المبلغ المستلم</span>
         <span class="amount">
           ${formatMoney(item.amount)}
         </span>
       </div>
 
       <div class="entry-row">
-        <span>المصروف</span>
+        <span>المبلغ الموزع</span>
         <span>
-          ${formatMoney(item.spent)}
+          ${formatMoney(distributed)}
         </span>
       </div>
 
       <div class="entry-row">
-        <span>المتبقي</span>
-        <span class="amount">
-          ${formatMoney(item.remaining)}
+        <span>المتبقي لديّ</span>
+        <span class="remaining">
+          ${formatMoney(remaining)}
         </span>
       </div>
 
       <div class="entry-row">
         <span>التاريخ</span>
         <span>
-          ${item.date}
+          ${escapeHtml(item.date)}
         </span>
       </div>
 
       <div class="entry-row">
         <span>الحالة</span>
-        <span>
-          ${item.status}
+        <span class="status">
+          ${remaining > 0 ? "مفتوحة" : "موزعة بالكامل"}
         </span>
       </div>
 
@@ -494,6 +631,12 @@ function render(){
       }
 
       <button
+        class="primary small-btn"
+        onclick="openDistribution(${item.id})">
+        👤 توزيع من هذه العهدة
+      </button>
+
+      <button
         class="delete-btn"
         onclick="deleteCustody(${item.id})">
         🗑️ حذف العهدة
@@ -509,34 +652,349 @@ function render(){
 
   updateStats();
 
+  renderPersons();
+
 }
 
 
-// تحديث الإحصائيات
+/* =========================
+   نافذة توزيع العهدة
+========================= */
+
+function openDistribution(custodyId){
+
+  const custody =
+    custodys.find(x => x.id === custodyId);
+
+  if(!custody) return;
+
+
+  const distributed =
+    distributedForCustody(custodyId);
+
+  const remaining =
+    Number(custody.amount) - distributed;
+
+
+  if(remaining <= 0){
+
+    alert("تم توزيع كامل مبلغ هذه العهدة.");
+
+    return;
+  }
+
+
+  const person =
+    prompt(
+      "اكتب اسم الشخص الذي ستعطيه العهدة:"
+    );
+
+
+  if(!person || !person.trim()){
+
+    return;
+  }
+
+
+  const type =
+    prompt(
+      "اكتب نوع العهدة أو الغرض:\nمثال: الأنشطة أو الصيانة"
+    );
+
+
+  if(!type || !type.trim()){
+
+    return;
+  }
+
+
+  const amountText =
+    prompt(
+      "اكتب مبلغ العهدة:\nالمتاح: " +
+      formatMoney(remaining)
+    );
+
+
+  if(amountText === null) return;
+
+
+  const amount =
+    Number(amountText);
+
+
+  if(!amount || amount <= 0){
+
+    alert("أدخل مبلغًا صحيحًا.");
+
+    return;
+  }
+
+
+  if(amount > remaining){
+
+    alert(
+      "المبلغ أكبر من المتبقي في العهدة.\n\n" +
+      "المتاح: " +
+      formatMoney(remaining)
+    );
+
+    return;
+  }
+
+
+  const distribution = {
+
+    id: Date.now(),
+
+    custodyId: custodyId,
+
+    person: person.trim(),
+
+    type: type.trim(),
+
+    amount: amount,
+
+    spent: 0,
+
+    remaining: amount,
+
+    date:
+      new Date().toISOString().split("T")[0],
+
+    status: "غير مصفاة"
+
+  };
+
+
+  distributions.unshift(distribution);
+
+  saveData();
+
+  render();
+
+
+  alert(
+    "تم توزيع العهدة بنجاح ✅\n\n" +
+    person.trim() +
+    "\n" +
+    type.trim() +
+    "\n" +
+    formatMoney(amount)
+  );
+
+}
+
+
+/* =========================
+   عرض العهد عند الأشخاص
+========================= */
+
+function renderPersons(){
+
+  const list =
+    document.getElementById("personList");
+
+  list.innerHTML = "";
+
+
+  if(distributions.length === 0){
+
+    list.innerHTML =
+      '<div class="empty">لم يتم توزيع أي عهد على الأشخاص حتى الآن.</div>';
+
+    return;
+  }
+
+
+  distributions.forEach(item => {
+
+    const custody =
+      custodys.find(x => x.id === item.custodyId);
+
+
+    const div =
+      document.createElement("div");
+
+    div.className = "person";
+
+
+    div.innerHTML = `
+
+      <div class="person-title">
+        👤 ${escapeHtml(item.person)}
+      </div>
+
+      <div class="entry-row">
+        <span>نوع العهدة</span>
+        <span>
+          ${escapeHtml(item.type)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>المبلغ المسلم</span>
+        <span class="amount">
+          ${formatMoney(item.amount)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>المصروف</span>
+        <span>
+          ${formatMoney(item.spent)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>المتبقي</span>
+        <span class="remaining">
+          ${formatMoney(item.remaining)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>الحالة</span>
+        <span class="status">
+          ${escapeHtml(item.status)}
+        </span>
+      </div>
+
+      ${
+        custody
+        ?
+        `<div class="note">
+          العهدة الأصلية: ${escapeHtml(custody.source)}
+        </div>`
+        :
+        ""
+      }
+
+      <div class="note">
+        تاريخ التسليم: ${escapeHtml(item.date)}
+      </div>
+
+      <button
+        class="secondary small-btn"
+        onclick="showDistributionInfo(${item.id})">
+        👁️ تفاصيل العهدة
+      </button>
+
+      <button
+        class="delete-btn"
+        onclick="deleteDistribution(${item.id})">
+        🗑️ حذف عهدة الشخص
+      </button>
+
+    `;
+
+
+    list.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================
+   تفاصيل عهدة الشخص
+========================= */
+
+function showDistributionInfo(id){
+
+  const item =
+    distributions.find(x => x.id === id);
+
+  if(!item) return;
+
+
+  alert(
+    "تفاصيل العهدة\n\n" +
+
+    "الشخص: " + item.person + "\n" +
+
+    "النوع: " + item.type + "\n" +
+
+    "المبلغ: " + formatMoney(item.amount) + "\n" +
+
+    "المصروف: " + formatMoney(item.spent) + "\n" +
+
+    "المتبقي: " + formatMoney(item.remaining) + "\n\n" +
+
+    "الحالة: " + item.status
+  );
+
+}
+
+
+/* =========================
+   حذف عهدة شخص
+========================= */
+
+function deleteDistribution(id){
+
+  const item =
+    distributions.find(x => x.id === id);
+
+  if(!item) return;
+
+
+  const ok =
+    confirm(
+      "هل أنت متأكد من حذف عهدة " +
+      item.person +
+      "؟"
+    );
+
+
+  if(!ok) return;
+
+
+  distributions =
+    distributions.filter(x => x.id !== id);
+
+  saveData();
+
+  render();
+
+}
+
+
+/* =========================
+   تحديث الإحصائيات
+========================= */
+
 function updateStats(){
 
   let received = 0;
-  let spent = 0;
+
+  let distributed = 0;
 
 
   custodys.forEach(item => {
 
-    received += Number(item.amount) || 0;
+    received +=
+      Number(item.amount) || 0;
 
-    spent += Number(item.spent) || 0;
+  });
+
+
+  distributions.forEach(item => {
+
+    distributed +=
+      Number(item.amount) || 0;
 
   });
 
 
   const remaining =
-    received - spent;
+    received - distributed;
 
 
   document.getElementById("totalReceived").textContent =
     formatMoney(received);
 
-  document.getElementById("totalSpent").textContent =
-    formatMoney(spent);
+  document.getElementById("totalDistributed").textContent =
+    formatMoney(distributed);
 
   document.getElementById("totalRemaining").textContent =
     formatMoney(remaining);
@@ -547,57 +1005,44 @@ function updateStats(){
 }
 
 
-// حذف عهدة
-function deleteCustody(id){
+/* =========================
+   تنسيق المبالغ
+========================= */
 
-  const item =
-    custodys.find(x => x.id === id);
-
-  if(!item) return;
-
-
-  const confirmDelete =
-    confirm(
-      "هل أنت متأكد من حذف هذه العهدة؟"
-    );
-
-
-  if(!confirmDelete) return;
-
-
-  custodys =
-    custodys.filter(x => x.id !== id);
-
-  saveData();
-
-  render();
-
-}
-
-
-// تنسيق المبلغ
 function formatMoney(number){
 
   return Number(number || 0)
-    .toLocaleString("ar-YE") + " ريال";
+    .toLocaleString("ar-YE") +
+    " ريال";
 
 }
 
 
-// حماية النصوص
+/* =========================
+   حماية النصوص
+========================= */
+
 function escapeHtml(text){
 
   return String(text)
+
     .replace(/&/g,"&amp;")
+
     .replace(/</g,"&lt;")
+
     .replace(/>/g,"&gt;")
+
     .replace(/"/g,"&quot;")
+
     .replace(/'/g,"&#039;");
 
 }
 
 
-// تشغيل التطبيق
+/* =========================
+   تشغيل التطبيق
+========================= */
+
 render();
 
 </script>

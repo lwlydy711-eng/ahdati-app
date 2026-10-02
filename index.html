@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>عُهدتي — إدارة العهد والتصفية</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,"Tahoma",sans-serif;
+  background:#f4f7f5;
+  color:#17332b;
+}
+
+header{
+  background:#073b32;
+  color:white;
+  padding:22px 18px;
+  text-align:center;
+  border-radius:0 0 24px 24px;
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+}
+
+header p{
+  margin:8px 0 0;
+  opacity:.9;
+  font-size:14px;
+}
+
+.container{
+  width:94%;
+  max-width:700px;
+  margin:18px auto 40px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,.06);
+}
+
+.card h2{
+  margin-top:0;
+  font-size:19px;
+}
+
+label{
+  display:block;
+  margin:13px 0 7px;
+  font-weight:bold;
+  font-size:14px;
+}
+
+input,
+textarea{
+  width:100%;
+  border:1px solid #d8e1dd;
+  border-radius:12px;
+  padding:13px;
+  font-size:16px;
+  font-family:inherit;
+  outline:none;
+  background:#fafcfb;
+}
+
+input:focus,
+textarea:focus{
+  border-color:#087f5b;
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:14px;
+  margin-top:15px;
+  font-size:16px;
+  font-family:inherit;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.primary{
+  background:#087f5b;
+  color:white;
+}
+
+.secondary{
+  background:#e9f2ee;
+  color:#07533e;
+}
+
+.danger{
+  background:#ffe9e9;
+  color:#a40000;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.stat{
+  background:#f4f8f6;
+  border-radius:14px;
+  padding:15px;
+  text-align:center;
+}
+
+.stat small{
+  display:block;
+  color:#66756f;
+  margin-bottom:7px;
+}
+
+.stat strong{
+  font-size:20px;
+}
+
+.empty{
+  text-align:center;
+  color:#7b8782;
+  padding:20px 5px;
+}
+
+.entry{
+  border:1px solid #e1e9e5;
+  border-radius:15px;
+  padding:15px;
+  margin-top:12px;
+}
+
+.entry-title{
+  font-weight:bold;
+  font-size:17px;
+}
+
+.entry-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px dashed #e3e9e6;
+}
+
+.entry-row:last-child{
+  border-bottom:0;
+}
+
+.amount{
+  color:#087f5b;
+  font-weight:bold;
+}
+
+.note{
+  color:#66756f;
+  font-size:13px;
+  margin-top:8px;
+}
+
+.delete-btn{
+  background:#fff1f1;
+  color:#a40000;
+  margin-top:10px;
+  padding:10px;
+}
+
+footer{
+  text-align:center;
+  color:#7a8781;
+  font-size:12px;
+  margin-top:25px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>عُهدتي</h1>
+  <p>إدارة العهد والتصفية</p>
+</header>
+
+<div class="container">
+
+  <!-- الملخص -->
+  <div class="card">
+    <h2>📊 ملخص العهد</h2>
+
+    <div class="stats">
+
+      <div class="stat">
+        <small>إجمالي العهد</small>
+        <strong id="totalReceived">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>إجمالي المصروف</small>
+        <strong id="totalSpent">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>الرصيد المتبقي</small>
+        <strong id="totalRemaining">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>عدد العهد</small>
+        <strong id="totalEntries">0</strong>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- استلام عهدة -->
+  <div class="card">
+
+    <h2>🏦 استلام عهدة جديدة</h2>
+
+    <label>الجهة التي سلمت العهدة</label>
+    <input
+      id="source"
+      type="text"
+      placeholder="مثال: الإدارة المالية"
+    >
+
+    <label>المبلغ</label>
+    <input
+      id="amount"
+      type="number"
+      inputmode="decimal"
+      placeholder="مثال: 500000"
+    >
+
+    <label>التاريخ</label>
+    <input
+      id="date"
+      type="date"
+    >
+
+    <label>رقم المرجع</label>
+    <input
+      id="reference"
+      type="text"
+      placeholder="اختياري"
+    >
+
+    <label>ملاحظات</label>
+    <textarea
+      id="notes"
+      placeholder="أي ملاحظات عن العهدة..."
+    ></textarea>
+
+    <button class="primary" onclick="addCustody()">
+      ➕ تسجيل العهدة
+    </button>
+
+  </div>
+
+
+  <!-- قائمة العهد -->
+  <div class="card">
+
+    <h2>📋 العهد المسجلة</h2>
+
+    <div id="custodyList"></div>
+
+  </div>
+
+
+  <footer>
+    عُهدتي — نظام شخصي لإدارة العهد والتصفية
+  </footer>
+
+</div>
+
+
+<script>
+
+let custodys = JSON.parse(
+  localStorage.getItem("ahdati_custodys") || "[]"
+);
+
+
+// تعيين تاريخ اليوم تلقائيًا
+document.getElementById("date").value =
+  new Date().toISOString().split("T")[0];
+
+
+// إضافة عهدة
+function addCustody(){
+
+  const source =
+    document.getElementById("source").value.trim();
+
+  const amount =
+    Number(document.getElementById("amount").value);
+
+  const date =
+    document.getElementById("date").value;
+
+  const reference =
+    document.getElementById("reference").value.trim();
+
+  const notes =
+    document.getElementById("notes").value.trim();
+
+
+  if(!source){
+    alert("اكتب الجهة التي سلمت العهدة");
+    return;
+  }
+
+  if(!amount || amount <= 0){
+    alert("اكتب مبلغًا صحيحًا");
+    return;
+  }
+
+  if(!date){
+    alert("اختر التاريخ");
+    return;
+  }
+
+
+  const custody = {
+
+    id: Date.now(),
+
+    source: source,
+
+    amount: amount,
+
+    spent: 0,
+
+    remaining: amount,
+
+    date: date,
+
+    reference: reference,
+
+    notes: notes,
+
+    status: "مفتوحة"
+
+  };
+
+
+  custodys.unshift(custody);
+
+  saveData();
+
+  clearForm();
+
+  render();
+
+  alert("تم تسجيل العهدة بنجاح ✅");
+}
+
+
+// حفظ البيانات
+function saveData(){
+
+  localStorage.setItem(
+    "ahdati_custodys",
+    JSON.stringify(custodys)
+  );
+
+}
+
+
+// تنظيف النموذج
+function clearForm(){
+
+  document.getElementById("source").value = "";
+
+  document.getElementById("amount").value = "";
+
+  document.getElementById("reference").value = "";
+
+  document.getElementById("notes").value = "";
+
+  document.getElementById("date").value =
+    new Date().toISOString().split("T")[0];
+
+}
+
+
+// عرض العهد
+function render(){
+
+  const list =
+    document.getElementById("custodyList");
+
+  list.innerHTML = "";
+
+
+  if(custodys.length === 0){
+
+    list.innerHTML =
+      '<div class="empty">لا توجد عهد مسجلة حتى الآن</div>';
+
+    updateStats();
+
+    return;
+  }
+
+
+  custodys.forEach(item => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "entry";
+
+
+    div.innerHTML = `
+
+      <div class="entry-title">
+        ${escapeHtml(item.source)}
+      </div>
+
+      <div class="entry-row">
+        <span>المبلغ</span>
+        <span class="amount">
+          ${formatMoney(item.amount)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>المصروف</span>
+        <span>
+          ${formatMoney(item.spent)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>المتبقي</span>
+        <span class="amount">
+          ${formatMoney(item.remaining)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>التاريخ</span>
+        <span>
+          ${item.date}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>الحالة</span>
+        <span>
+          ${item.status}
+        </span>
+      </div>
+
+      ${
+        item.reference
+        ?
+        `<div class="note">
+          المرجع: ${escapeHtml(item.reference)}
+        </div>`
+        :
+        ""
+      }
+
+      ${
+        item.notes
+        ?
+        `<div class="note">
+          ${escapeHtml(item.notes)}
+        </div>`
+        :
+        ""
+      }
+
+      <button
+        class="delete-btn"
+        onclick="deleteCustody(${item.id})">
+        🗑️ حذف العهدة
+      </button>
+
+    `;
+
+
+    list.appendChild(div);
+
+  });
+
+
+  updateStats();
+
+}
+
+
+// تحديث الإحصائيات
+function updateStats(){
+
+  let received = 0;
+  let spent = 0;
+
+
+  custodys.forEach(item => {
+
+    received += Number(item.amount) || 0;
+
+    spent += Number(item.spent) || 0;
+
+  });
+
+
+  const remaining =
+    received - spent;
+
+
+  document.getElementById("totalReceived").textContent =
+    formatMoney(received);
+
+  document.getElementById("totalSpent").textContent =
+    formatMoney(spent);
+
+  document.getElementById("totalRemaining").textContent =
+    formatMoney(remaining);
+
+  document.getElementById("totalEntries").textContent =
+    custodys.length;
+
+}
+
+
+// حذف عهدة
+function deleteCustody(id){
+
+  const item =
+    custodys.find(x => x.id === id);
+
+  if(!item) return;
+
+
+  const confirmDelete =
+    confirm(
+      "هل أنت متأكد من حذف هذه العهدة؟"
+    );
+
+
+  if(!confirmDelete) return;
+
+
+  custodys =
+    custodys.filter(x => x.id !== id);
+
+  saveData();
+
+  render();
+
+}
+
+
+// تنسيق المبلغ
+function formatMoney(number){
+
+  return Number(number || 0)
+    .toLocaleString("ar-YE") + " ريال";
+
+}
+
+
+// حماية النصوص
+function escapeHtml(text){
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+// تشغيل التطبيق
+render();
+
+</script>
+
+</body>
+</html>

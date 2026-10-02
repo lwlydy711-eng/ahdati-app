@@ -39,7 +39,7 @@ header p{
 
 .container{
   width:94%;
-  max-width:750px;
+  max-width:760px;
   margin:18px auto 40px;
 }
 
@@ -83,7 +83,7 @@ select:focus{
 }
 
 textarea{
-  min-height:90px;
+  min-height:85px;
   resize:vertical;
 }
 
@@ -92,7 +92,7 @@ button{
   border:0;
   border-radius:13px;
   padding:14px;
-  margin-top:15px;
+  margin-top:12px;
   font-size:16px;
   font-family:inherit;
   font-weight:bold;
@@ -128,7 +128,7 @@ button{
 .stat{
   background:#f4f8f6;
   border-radius:14px;
-  padding:15px;
+  padding:14px;
   text-align:center;
 }
 
@@ -139,7 +139,7 @@ button{
 }
 
 .stat strong{
-  font-size:19px;
+  font-size:18px;
 }
 
 .entry{
@@ -181,7 +181,7 @@ button{
   background:#f7faf8;
   border:1px solid #e0e9e5;
   border-radius:14px;
-  padding:13px;
+  padding:14px;
   margin-top:10px;
 }
 
@@ -201,6 +201,16 @@ button{
   font-weight:bold;
 }
 
+.status-open{
+  background:#fff4d9;
+  color:#805600;
+}
+
+.status-done{
+  background:#e8f5ef;
+  color:#087f5b;
+}
+
 .empty{
   text-align:center;
   color:#7b8782;
@@ -216,8 +226,6 @@ button{
 .delete-btn{
   background:#fff1f1;
   color:#a40000;
-  margin-top:10px;
-  padding:10px;
 }
 
 .small-btn{
@@ -236,14 +244,56 @@ button{
 
 .total-box strong{
   display:block;
-  font-size:23px;
+  font-size:22px;
   margin-top:5px;
+}
+
+.invoice{
+  background:white;
+  border:1px solid #e1e9e5;
+  border-radius:14px;
+  padding:13px;
+  margin-top:10px;
+}
+
+.invoice img{
+  width:100%;
+  max-height:280px;
+  object-fit:contain;
+  border-radius:10px;
+  margin-top:10px;
+  background:#f3f5f4;
+}
+
+.invoice-title{
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.camera-label{
+  display:block;
+  background:#e9f2ee;
+  color:#07533e;
+  border-radius:13px;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.camera-label input{
+  display:none;
 }
 
 .divider{
   height:1px;
   background:#e5ebe8;
   margin:18px 0;
+}
+
+.back-btn{
+  margin-bottom:12px;
 }
 
 footer{
@@ -264,103 +314,207 @@ footer{
 
 <div class="container">
 
-  <!-- الملخص -->
-  <div class="card">
-    <h2>📊 ملخص العهد</h2>
+  <!-- الصفحة الرئيسية -->
 
-    <div class="stats">
+  <div id="homePage">
 
-      <div class="stat">
-        <small>إجمالي العهد المستلمة</small>
-        <strong id="totalReceived">0</strong>
-      </div>
+    <div class="card">
 
-      <div class="stat">
-        <small>إجمالي الموزع</small>
-        <strong id="totalDistributed">0</strong>
-      </div>
+      <h2>📊 ملخص العهد</h2>
 
-      <div class="stat">
-        <small>المتبقي لديّ</small>
-        <strong id="totalRemaining">0</strong>
-      </div>
+      <div class="stats">
 
-      <div class="stat">
-        <small>عدد العهد</small>
-        <strong id="totalEntries">0</strong>
+        <div class="stat">
+          <small>إجمالي العهد المستلمة</small>
+          <strong id="totalReceived">0</strong>
+        </div>
+
+        <div class="stat">
+          <small>إجمالي الموزع</small>
+          <strong id="totalDistributed">0</strong>
+        </div>
+
+        <div class="stat">
+          <small>المتبقي لديّ</small>
+          <strong id="totalRemaining">0</strong>
+        </div>
+
+        <div class="stat">
+          <small>عهد غير مصفاة</small>
+          <strong id="openCount">0</strong>
+        </div>
+
       </div>
 
     </div>
+
+
+    <!-- استلام عهدة -->
+
+    <div class="card">
+
+      <h2>🏦 استلام عهدة جديدة</h2>
+
+      <label>الجهة التي سلمت العهدة</label>
+
+      <input
+        id="source"
+        type="text"
+        placeholder="مثال: الإدارة المالية"
+      >
+
+      <label>المبلغ</label>
+
+      <input
+        id="amount"
+        type="number"
+        inputmode="decimal"
+        placeholder="مثال: 500000"
+      >
+
+      <label>التاريخ</label>
+
+      <input
+        id="date"
+        type="date"
+      >
+
+      <label>رقم المرجع</label>
+
+      <input
+        id="reference"
+        type="text"
+        placeholder="اختياري"
+      >
+
+      <label>ملاحظات</label>
+
+      <textarea
+        id="notes"
+        placeholder="أي ملاحظات عن العهدة..."
+      ></textarea>
+
+      <button class="primary" onclick="addCustody()">
+        ➕ تسجيل العهدة
+      </button>
+
+    </div>
+
+
+    <!-- العهد الأصلية -->
+
+    <div class="card">
+
+      <h2>📋 العهد المسجلة</h2>
+
+      <div id="custodyList"></div>
+
+    </div>
+
+
+    <!-- عهد الأشخاص -->
+
+    <div class="card">
+
+      <h2>👥 العهد عند الأشخاص</h2>
+
+      <div id="personList"></div>
+
+    </div>
+
   </div>
 
 
-  <!-- استلام عهدة -->
-  <div class="card">
+  <!-- صفحة تفاصيل الشخص -->
 
-    <h2>🏦 استلام عهدة جديدة</h2>
+  <div id="personPage" style="display:none">
 
-    <label>الجهة التي سلمت العهدة</label>
-
-    <input
-      id="source"
-      type="text"
-      placeholder="مثال: الإدارة المالية"
-    >
-
-    <label>المبلغ</label>
-
-    <input
-      id="amount"
-      type="number"
-      inputmode="decimal"
-      placeholder="مثال: 500000"
-    >
-
-    <label>التاريخ</label>
-
-    <input
-      id="date"
-      type="date"
-    >
-
-    <label>رقم المرجع</label>
-
-    <input
-      id="reference"
-      type="text"
-      placeholder="اختياري"
-    >
-
-    <label>ملاحظات</label>
-
-    <textarea
-      id="notes"
-      placeholder="أي ملاحظات عن العهدة..."
-    ></textarea>
-
-    <button class="primary" onclick="addCustody()">
-      ➕ تسجيل العهدة
+    <button
+      class="secondary back-btn"
+      onclick="goHome()">
+      ↩️ العودة إلى العهد
     </button>
 
-  </div>
+
+    <div id="personDetails"></div>
 
 
-  <!-- قائمة العهد -->
-  <div class="card">
+    <!-- إضافة فاتورة -->
 
-    <h2>📋 العهد المسجلة</h2>
+    <div class="card">
 
-    <div id="custodyList"></div>
+      <h2>🧾 إضافة فاتورة</h2>
 
-  </div>
+      <label>مبلغ الفاتورة</label>
+
+      <input
+        id="invoiceAmount"
+        type="number"
+        inputmode="decimal"
+        placeholder="مثال: 25000"
+      >
+
+      <label>تاريخ الفاتورة</label>
+
+      <input
+        id="invoiceDate"
+        type="date"
+      >
+
+      <label>وصف المصروف</label>
+
+      <input
+        id="invoiceDescription"
+        type="text"
+        placeholder="مثال: شراء أدوات"
+      >
+
+      <label>ملاحظات</label>
+
+      <textarea
+        id="invoiceNotes"
+        placeholder="اختياري"
+      ></textarea>
 
 
-  <!-- العهد الموزعة -->
-  <div class="card">
+      <label class="camera-label">
 
-    <h2>👥 العهد عند الأشخاص</h2>
+        📷 تصوير الفاتورة بالكاميرا
 
-    <div id="personList"></div>
+        <input
+          id="invoicePhoto"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onchange="previewInvoicePhoto(event)"
+        >
+
+      </label>
+
+
+      <div id="photoPreview"></div>
+
+
+      <button
+        class="primary"
+        onclick="addInvoice()">
+
+        🧾 حفظ الفاتورة
+
+      </button>
+
+    </div>
+
+
+    <!-- الفواتير -->
+
+    <div class="card">
+
+      <h2>📚 فواتير العهدة</h2>
+
+      <div id="invoiceList"></div>
+
+    </div>
 
   </div>
 
@@ -374,9 +528,9 @@ footer{
 
 <script>
 
-/* =========================
+/* ===================================
    البيانات
-========================= */
+=================================== */
 
 let custodys = JSON.parse(
   localStorage.getItem("ahdati_custodys") || "[]"
@@ -386,18 +540,29 @@ let distributions = JSON.parse(
   localStorage.getItem("ahdati_distributions") || "[]"
 );
 
+let invoices = JSON.parse(
+  localStorage.getItem("ahdati_invoices") || "[]"
+);
 
-/* =========================
+let currentDistributionId = null;
+
+let currentPhoto = "";
+
+
+/* ===================================
    التاريخ
-========================= */
+=================================== */
 
 document.getElementById("date").value =
   new Date().toISOString().split("T")[0];
 
+document.getElementById("invoiceDate").value =
+  new Date().toISOString().split("T")[0];
 
-/* =========================
-   حفظ البيانات
-========================= */
+
+/* ===================================
+   الحفظ
+=================================== */
 
 function saveData(){
 
@@ -411,12 +576,17 @@ function saveData(){
     JSON.stringify(distributions)
   );
 
+  localStorage.setItem(
+    "ahdati_invoices",
+    JSON.stringify(invoices)
+  );
+
 }
 
 
-/* =========================
-   إضافة عهدة
-========================= */
+/* ===================================
+   إضافة العهدة الأصلية
+=================================== */
 
 function addCustody(){
 
@@ -468,17 +638,11 @@ function addCustody(){
 
     amount: amount,
 
-    spent: 0,
-
-    remaining: amount,
-
     date: date,
 
     reference: reference,
 
-    notes: notes,
-
-    status: "مفتوحة"
+    notes: notes
 
   };
 
@@ -487,7 +651,7 @@ function addCustody(){
 
   saveData();
 
-  clearForm();
+  clearCustodyForm();
 
   render();
 
@@ -496,11 +660,11 @@ function addCustody(){
 }
 
 
-/* =========================
-   تنظيف النموذج
-========================= */
+/* ===================================
+   تنظيف نموذج العهدة
+=================================== */
 
-function clearForm(){
+function clearCustodyForm(){
 
   document.getElementById("source").value = "";
 
@@ -516,24 +680,78 @@ function clearForm(){
 }
 
 
-/* =========================
-   إجمالي الموزع لعهدة معينة
-========================= */
+/* ===================================
+   إجمالي توزيع عهدة
+=================================== */
 
 function distributedForCustody(custodyId){
 
   return distributions
+
     .filter(x => x.custodyId === custodyId)
-    .reduce((sum,x) => sum + Number(x.amount || 0),0);
+
+    .reduce(
+      (sum,x) =>
+        sum + Number(x.amount || 0),
+      0
+    );
 
 }
 
 
-/* =========================
-   عرض العهد
-========================= */
+/* ===================================
+   إجمالي فواتير عهدة شخص
+=================================== */
+
+function invoiceTotal(distributionId){
+
+  return invoices
+
+    .filter(x => x.distributionId === distributionId)
+
+    .reduce(
+      (sum,x) =>
+        sum + Number(x.amount || 0),
+      0
+    );
+
+}
+
+
+/* ===================================
+   حساب المتبقي للشخص
+=================================== */
+
+function personRemaining(item){
+
+  const total =
+    invoiceTotal(item.id);
+
+  return Number(item.amount) - total;
+
+}
+
+
+/* ===================================
+   عرض الصفحة
+=================================== */
 
 function render(){
+
+  renderCustodys();
+
+  renderPersons();
+
+  updateStats();
+
+}
+
+
+/* ===================================
+   عرض العهد الأصلية
+=================================== */
+
+function renderCustodys(){
 
   const list =
     document.getElementById("custodyList");
@@ -545,10 +763,6 @@ function render(){
 
     list.innerHTML =
       '<div class="empty">لا توجد عهد مسجلة حتى الآن</div>';
-
-    updateStats();
-
-    renderPersons();
 
     return;
   }
@@ -577,6 +791,7 @@ function render(){
 
       <div class="entry-row">
         <span>المبلغ المستلم</span>
+
         <span class="amount">
           ${formatMoney(item.amount)}
         </span>
@@ -584,6 +799,7 @@ function render(){
 
       <div class="entry-row">
         <span>المبلغ الموزع</span>
+
         <span>
           ${formatMoney(distributed)}
         </span>
@@ -591,6 +807,7 @@ function render(){
 
       <div class="entry-row">
         <span>المتبقي لديّ</span>
+
         <span class="remaining">
           ${formatMoney(remaining)}
         </span>
@@ -598,15 +815,9 @@ function render(){
 
       <div class="entry-row">
         <span>التاريخ</span>
+
         <span>
           ${escapeHtml(item.date)}
-        </span>
-      </div>
-
-      <div class="entry-row">
-        <span>الحالة</span>
-        <span class="status">
-          ${remaining > 0 ? "مفتوحة" : "موزعة بالكامل"}
         </span>
       </div>
 
@@ -633,13 +844,17 @@ function render(){
       <button
         class="primary small-btn"
         onclick="openDistribution(${item.id})">
+
         👤 توزيع من هذه العهدة
+
       </button>
 
       <button
-        class="delete-btn"
+        class="danger small-btn"
         onclick="deleteCustody(${item.id})">
+
         🗑️ حذف العهدة
+
       </button>
 
     `;
@@ -649,17 +864,12 @@ function render(){
 
   });
 
-
-  updateStats();
-
-  renderPersons();
-
 }
 
 
-/* =========================
-   نافذة توزيع العهدة
-========================= */
+/* ===================================
+   توزيع العهدة
+=================================== */
 
 function openDistribution(custodyId){
 
@@ -678,7 +888,9 @@ function openDistribution(custodyId){
 
   if(remaining <= 0){
 
-    alert("تم توزيع كامل مبلغ هذه العهدة.");
+    alert(
+      "لا يوجد مبلغ متبقٍ لتوزيعه."
+    );
 
     return;
   }
@@ -686,7 +898,7 @@ function openDistribution(custodyId){
 
   const person =
     prompt(
-      "اكتب اسم الشخص الذي ستعطيه العهدة:"
+      "اكتب اسم الشخص:"
     );
 
 
@@ -710,7 +922,7 @@ function openDistribution(custodyId){
 
   const amountText =
     prompt(
-      "اكتب مبلغ العهدة:\nالمتاح: " +
+      "اكتب المبلغ:\nالمتاح " +
       formatMoney(remaining)
     );
 
@@ -733,7 +945,7 @@ function openDistribution(custodyId){
   if(amount > remaining){
 
     alert(
-      "المبلغ أكبر من المتبقي في العهدة.\n\n" +
+      "المبلغ أكبر من المتاح.\n\n" +
       "المتاح: " +
       formatMoney(remaining)
     );
@@ -754,14 +966,8 @@ function openDistribution(custodyId){
 
     amount: amount,
 
-    spent: 0,
-
-    remaining: amount,
-
     date:
-      new Date().toISOString().split("T")[0],
-
-    status: "غير مصفاة"
+      new Date().toISOString().split("T")[0]
 
   };
 
@@ -785,9 +991,9 @@ function openDistribution(custodyId){
 }
 
 
-/* =========================
-   عرض العهد عند الأشخاص
-========================= */
+/* ===================================
+   عرض الأشخاص
+=================================== */
 
 function renderPersons(){
 
@@ -809,7 +1015,21 @@ function renderPersons(){
   distributions.forEach(item => {
 
     const custody =
-      custodys.find(x => x.id === item.custodyId);
+      custodys.find(
+        x => x.id === item.custodyId
+      );
+
+
+    const totalInvoices =
+      invoiceTotal(item.id);
+
+
+    const remaining =
+      personRemaining(item);
+
+
+    const completed =
+      remaining === 0;
 
 
     const div =
@@ -826,6 +1046,7 @@ function renderPersons(){
 
       <div class="entry-row">
         <span>نوع العهدة</span>
+
         <span>
           ${escapeHtml(item.type)}
         </span>
@@ -833,29 +1054,33 @@ function renderPersons(){
 
       <div class="entry-row">
         <span>المبلغ المسلم</span>
+
         <span class="amount">
           ${formatMoney(item.amount)}
         </span>
       </div>
 
       <div class="entry-row">
-        <span>المصروف</span>
+        <span>الفواتير</span>
+
         <span>
-          ${formatMoney(item.spent)}
+          ${formatMoney(totalInvoices)}
         </span>
       </div>
 
       <div class="entry-row">
         <span>المتبقي</span>
+
         <span class="remaining">
-          ${formatMoney(item.remaining)}
+          ${formatMoney(remaining)}
         </span>
       </div>
 
       <div class="entry-row">
         <span>الحالة</span>
-        <span class="status">
-          ${escapeHtml(item.status)}
+
+        <span class="${completed ? "status status-done" : "status status-open"}">
+          ${completed ? "مصفاة" : "غير مصفاة"}
         </span>
       </div>
 
@@ -869,20 +1094,20 @@ function renderPersons(){
         ""
       }
 
-      <div class="note">
-        تاريخ التسليم: ${escapeHtml(item.date)}
-      </div>
-
       <button
-        class="secondary small-btn"
-        onclick="showDistributionInfo(${item.id})">
-        👁️ تفاصيل العهدة
+        class="primary small-btn"
+        onclick="openPerson(${item.id})">
+
+        🧾 فتح العهدة والفواتير
+
       </button>
 
       <button
-        class="delete-btn"
+        class="danger small-btn"
         onclick="deleteDistribution(${item.id})">
+
         🗑️ حذف عهدة الشخص
+
       </button>
 
     `;
@@ -895,52 +1120,686 @@ function renderPersons(){
 }
 
 
-/* =========================
-   تفاصيل عهدة الشخص
-========================= */
+/* ===================================
+   فتح عهدة الشخص
+=================================== */
 
-function showDistributionInfo(id){
+function openPerson(id){
+
+  currentDistributionId = id;
+
+  currentPhoto = "";
+
+  document.getElementById("homePage").style.display =
+    "none";
+
+  document.getElementById("personPage").style.display =
+    "block";
+
+
+  document.getElementById("invoiceAmount").value = "";
+
+  document.getElementById("invoiceDescription").value = "";
+
+  document.getElementById("invoiceNotes").value = "";
+
+  document.getElementById("invoiceDate").value =
+    new Date().toISOString().split("T")[0];
+
+  document.getElementById("photoPreview").innerHTML =
+    "";
+
+
+  renderPersonPage();
+
+}
+
+
+/* ===================================
+   عرض تفاصيل الشخص
+=================================== */
+
+function renderPersonPage(){
 
   const item =
-    distributions.find(x => x.id === id);
+    distributions.find(
+      x => x.id === currentDistributionId
+    );
+
+
+  if(!item){
+
+    goHome();
+
+    return;
+  }
+
+
+  const totalInvoices =
+    invoiceTotal(item.id);
+
+
+  const remaining =
+    personRemaining(item);
+
+
+  const div =
+    document.getElementById("personDetails");
+
+
+  div.innerHTML = `
+
+    <div class="card">
+
+      <h2>
+        👤 ${escapeHtml(item.person)}
+      </h2>
+
+      <div class="entry-row">
+        <span>نوع العهدة</span>
+
+        <span>
+          ${escapeHtml(item.type)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>المبلغ المسلم</span>
+
+        <span class="amount">
+          ${formatMoney(item.amount)}
+        </span>
+      </div>
+
+      <div class="entry-row">
+        <span>إجمالي الفواتير</span>
+
+        <span>
+          ${formatMoney(totalInvoices)}
+        </span>
+      </div>
+
+      <div class="total-box">
+
+        المبلغ المتبقي
+
+        <strong>
+          ${formatMoney(remaining)}
+        </strong>
+
+      </div>
+
+      ${
+        remaining === 0
+        ?
+        `
+        <button
+          class="primary"
+          onclick="completeSettlement(${item.id})">
+
+          ✅ تمت التصفية
+
+        </button>
+        `
+        :
+        `
+        <button
+          class="warning"
+          onclick="settlementInfo(${item.id})">
+
+          ⏳ العهدة غير مكتملة
+
+        </button>
+        `
+      }
+
+    </div>
+
+  `;
+
+
+  renderInvoices();
+
+}
+
+
+/* ===================================
+   تصوير الفاتورة
+=================================== */
+
+function previewInvoicePhoto(event){
+
+  const file =
+    event.target.files[0];
+
+
+  if(!file){
+
+    currentPhoto = "";
+
+    document.getElementById("photoPreview").innerHTML =
+      "";
+
+    return;
+  }
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload = function(e){
+
+    currentPhoto =
+      e.target.result;
+
+
+    document.getElementById("photoPreview").innerHTML = `
+
+      <div class="invoice">
+
+        <strong>معاينة الفاتورة</strong>
+
+        <img
+          src="${currentPhoto}"
+          alt="صورة الفاتورة">
+
+      </div>
+
+    `;
+
+  };
+
+
+  reader.readAsDataURL(file);
+
+}
+
+
+/* ===================================
+   إضافة فاتورة
+=================================== */
+
+function addInvoice(){
+
+  if(!currentDistributionId){
+
+    alert("لم يتم اختيار عهدة.");
+
+    return;
+  }
+
+
+  const amount =
+    Number(
+      document.getElementById("invoiceAmount").value
+    );
+
+
+  const date =
+    document.getElementById("invoiceDate").value;
+
+
+  const description =
+    document.getElementById("invoiceDescription")
+      .value.trim();
+
+
+  const notes =
+    document.getElementById("invoiceNotes")
+      .value.trim();
+
+
+  const item =
+    distributions.find(
+      x => x.id === currentDistributionId
+    );
+
+
+  if(!item){
+
+    alert("العهدة غير موجودة.");
+
+    return;
+  }
+
+
+  if(!amount || amount <= 0){
+
+    alert("اكتب مبلغ الفاتورة.");
+
+    return;
+  }
+
+
+  if(!date){
+
+    alert("اختر تاريخ الفاتورة.");
+
+    return;
+  }
+
+
+  const currentTotal =
+    invoiceTotal(item.id);
+
+
+  const remaining =
+    Number(item.amount) - currentTotal;
+
+
+  if(amount > remaining){
+
+    alert(
+      "مبلغ الفاتورة أكبر من المتبقي في العهدة.\n\n" +
+
+      "المتبقي: " +
+      formatMoney(remaining)
+    );
+
+    return;
+  }
+
+
+  const invoice = {
+
+    id: Date.now(),
+
+    distributionId:
+      currentDistributionId,
+
+    amount: amount,
+
+    date: date,
+
+    description:
+      description,
+
+    notes:
+      notes,
+
+    photo:
+      currentPhoto
+
+  };
+
+
+  invoices.unshift(invoice);
+
+  saveData();
+
+
+  document.getElementById("invoiceAmount").value = "";
+
+  document.getElementById("invoiceDescription").value = "";
+
+  document.getElementById("invoiceNotes").value = "";
+
+  document.getElementById("photoPreview").innerHTML = "";
+
+  document.getElementById("invoicePhoto").value = "";
+
+  currentPhoto = "";
+
+
+  renderPersonPage();
+
+  renderPersons();
+
+  updateStats();
+
+
+  alert("تم حفظ الفاتورة بنجاح ✅");
+
+}
+
+
+/* ===================================
+   عرض الفواتير
+=================================== */
+
+function renderInvoices(){
+
+  const list =
+    document.getElementById("invoiceList");
+
+  list.innerHTML = "";
+
+
+  const data =
+    invoices.filter(
+      x =>
+        x.distributionId ===
+        currentDistributionId
+    );
+
+
+  if(data.length === 0){
+
+    list.innerHTML =
+      '<div class="empty">لا توجد فواتير مسجلة لهذه العهدة.</div>';
+
+    return;
+  }
+
+
+  data.forEach(item => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "invoice";
+
+
+    div.innerHTML = `
+
+      <div class="invoice-title">
+        🧾 ${formatMoney(item.amount)}
+      </div>
+
+      <div class="entry-row">
+        <span>التاريخ</span>
+
+        <span>
+          ${escapeHtml(item.date)}
+        </span>
+      </div>
+
+      ${
+        item.description
+        ?
+        `<div class="note">
+          المصروف: ${escapeHtml(item.description)}
+        </div>`
+        :
+        ""
+      }
+
+      ${
+        item.notes
+        ?
+        `<div class="note">
+          ملاحظات: ${escapeHtml(item.notes)}
+        </div>`
+        :
+        ""
+      }
+
+      ${
+        item.photo
+        ?
+        `<img
+          src="${item.photo}"
+          alt="صورة الفاتورة">
+        `
+        :
+        `<div class="note">
+          لا توجد صورة لهذه الفاتورة.
+        </div>`
+      }
+
+      <button
+        class="delete-btn small-btn"
+        onclick="deleteInvoice(${item.id})">
+
+        🗑️ حذف الفاتورة
+
+      </button>
+
+    `;
+
+
+    list.appendChild(div);
+
+  });
+
+}
+
+
+/* ===================================
+   حذف فاتورة
+=================================== */
+
+function deleteInvoice(id){
+
+  const invoice =
+    invoices.find(x => x.id === id);
+
+
+  if(!invoice) return;
+
+
+  const ok =
+    confirm(
+      "هل تريد حذف هذه الفاتورة؟"
+    );
+
+
+  if(!ok) return;
+
+
+  invoices =
+    invoices.filter(
+      x => x.id !== id
+    );
+
+
+  saveData();
+
+  renderPersonPage();
+
+  renderPersons();
+
+  updateStats();
+
+}
+
+
+/* ===================================
+   إتمام التصفية
+=================================== */
+
+function completeSettlement(id){
+
+  const item =
+    distributions.find(
+      x => x.id === id
+    );
+
 
   if(!item) return;
 
 
+  const total =
+    invoiceTotal(id);
+
+
+  const remaining =
+    Number(item.amount) - total;
+
+
+  if(remaining !== 0){
+
+    alert(
+      "لا يمكن إتمام التصفية حتى يصبح المتبقي صفرًا.\n\n" +
+
+      "المتبقي: " +
+      formatMoney(remaining)
+    );
+
+    return;
+  }
+
+
+  const ok =
+    confirm(
+      "هل تريد اعتماد تصفية عهدة " +
+      item.person +
+      "؟"
+    );
+
+
+  if(!ok) return;
+
+
+  item.status =
+    "مصفاة";
+
+
+  saveData();
+
+  renderPersonPage();
+
+  renderPersons();
+
+  updateStats();
+
+
   alert(
-    "تفاصيل العهدة\n\n" +
-
-    "الشخص: " + item.person + "\n" +
-
-    "النوع: " + item.type + "\n" +
-
-    "المبلغ: " + formatMoney(item.amount) + "\n" +
-
-    "المصروف: " + formatMoney(item.spent) + "\n" +
-
-    "المتبقي: " + formatMoney(item.remaining) + "\n\n" +
-
-    "الحالة: " + item.status
+    "تم اعتماد التصفية بنجاح ✅"
   );
 
 }
 
 
-/* =========================
+/* ===================================
+   معلومات التصفية
+=================================== */
+
+function settlementInfo(id){
+
+  const item =
+    distributions.find(
+      x => x.id === id
+    );
+
+
+  if(!item) return;
+
+
+  const total =
+    invoiceTotal(id);
+
+
+  const remaining =
+    personRemaining(item);
+
+
+  alert(
+    "العهدة غير مكتملة\n\n" +
+
+    "المبلغ المسلم: " +
+    formatMoney(item.amount) +
+
+    "\nإجمالي الفواتير: " +
+    formatMoney(total) +
+
+    "\nالمتبقي: " +
+    formatMoney(remaining)
+  );
+
+}
+
+
+/* ===================================
+   العودة
+=================================== */
+
+function goHome(){
+
+  currentDistributionId = null;
+
+  document.getElementById("personPage").style.display =
+    "none";
+
+  document.getElementById("homePage").style.display =
+    "block";
+
+  render();
+
+}
+
+
+/* ===================================
+   حذف العهدة الأصلية
+=================================== */
+
+function deleteCustody(id){
+
+  const hasPeople =
+    distributions.some(
+      x => x.custodyId === id
+    );
+
+
+  if(hasPeople){
+
+    alert(
+      "لا يمكن حذف هذه العهدة لأنها مرتبطة بعهد أشخاص.\n" +
+      "احذف العهد المرتبطة بها أولًا."
+    );
+
+    return;
+  }
+
+
+  const ok =
+    confirm(
+      "هل أنت متأكد من حذف هذه العهدة؟"
+    );
+
+
+  if(!ok) return;
+
+
+  custodys =
+    custodys.filter(
+      x => x.id !== id
+    );
+
+
+  saveData();
+
+  render();
+
+}
+
+
+/* ===================================
    حذف عهدة شخص
-========================= */
+=================================== */
 
 function deleteDistribution(id){
 
+  const hasInvoices =
+    invoices.some(
+      x => x.distributionId === id
+    );
+
+
+  if(hasInvoices){
+
+    alert(
+      "لا يمكن حذف عهدة الشخص لأنها تحتوي على فواتير.\n" +
+      "احذف الفواتير أولًا."
+    );
+
+    return;
+  }
+
+
   const item =
-    distributions.find(x => x.id === id);
+    distributions.find(
+      x => x.id === id
+    );
+
 
   if(!item) return;
 
 
   const ok =
     confirm(
-      "هل أنت متأكد من حذف عهدة " +
+      "هل تريد حذف عهدة " +
       item.person +
       "؟"
     );
@@ -950,7 +1809,10 @@ function deleteDistribution(id){
 
 
   distributions =
-    distributions.filter(x => x.id !== id);
+    distributions.filter(
+      x => x.id !== id
+    );
+
 
   saveData();
 
@@ -959,15 +1821,17 @@ function deleteDistribution(id){
 }
 
 
-/* =========================
-   تحديث الإحصائيات
-========================= */
+/* ===================================
+   الإحصائيات
+=================================== */
 
 function updateStats(){
 
   let received = 0;
 
   let distributed = 0;
+
+  let open = 0;
 
 
   custodys.forEach(item => {
@@ -983,6 +1847,17 @@ function updateStats(){
     distributed +=
       Number(item.amount) || 0;
 
+
+    const remaining =
+      personRemaining(item);
+
+
+    if(remaining > 0){
+
+      open++;
+
+    }
+
   });
 
 
@@ -993,21 +1868,24 @@ function updateStats(){
   document.getElementById("totalReceived").textContent =
     formatMoney(received);
 
+
   document.getElementById("totalDistributed").textContent =
     formatMoney(distributed);
+
 
   document.getElementById("totalRemaining").textContent =
     formatMoney(remaining);
 
-  document.getElementById("totalEntries").textContent =
-    custodys.length;
+
+  document.getElementById("openCount").textContent =
+    open;
 
 }
 
 
-/* =========================
-   تنسيق المبالغ
-========================= */
+/* ===================================
+   تنسيق المبلغ
+=================================== */
 
 function formatMoney(number){
 
@@ -1018,9 +1896,9 @@ function formatMoney(number){
 }
 
 
-/* =========================
-   حماية النصوص
-========================= */
+/* ===================================
+   حماية النص
+=================================== */
 
 function escapeHtml(text){
 
@@ -1039,9 +1917,9 @@ function escapeHtml(text){
 }
 
 
-/* =========================
-   تشغيل التطبيق
-========================= */
+/* ===================================
+   تشغيل
+=================================== */
 
 render();
 
